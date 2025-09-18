@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 import { useState } from 'react';
@@ -26,14 +27,14 @@ export default function ReceiptsPage() {
     { 
       header: 'Amount', 
       accessor: 'amountPaid', 
-      render: (row: Receipt) => new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(row.amountPaid)
+      render: (row: Record<string, any>) => new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format((row as Receipt).amountPaid)
     },
-    { header: 'Status', accessor: 'status', render: (row: Receipt) => <StatusTag status={row.status} /> },
+    { header: 'Status', accessor: 'status', render: (row: Record<string, any>) => <StatusTag status={(row as Receipt).status} /> },
     {
       header: 'Actions',
       accessor: 'actions',
-      render: (row: Receipt) => (
-        <Button variant="secondary" className="!px-3 !py-1 text-xs" onClick={() => handleViewReceipt(row)}>
+      render: (row: Record<string, any>) => (
+        <Button variant="secondary" className="!px-3 !py-1 text-xs" onClick={() => handleViewReceipt(row as Receipt)}>
           View
         </Button>
       ),
