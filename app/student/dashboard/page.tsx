@@ -148,7 +148,7 @@ export default function StudentDashboard() {
               {date}
             </div>
           );
-        } catch (error) {
+        } catch  {
           return (
             <div className="flex items-center">
               <FiCalendar className="mr-2 text-gray-400" size={14} />
