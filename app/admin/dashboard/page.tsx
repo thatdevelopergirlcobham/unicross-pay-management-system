@@ -52,7 +52,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     // Check if user is authenticated using AuthService
     if (!AuthService.isAuthenticated()) {
-      router.push('/login');
+      router.push('/');
       return;
     }
 
