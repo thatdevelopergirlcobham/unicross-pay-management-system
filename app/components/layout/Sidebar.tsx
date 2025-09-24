@@ -11,6 +11,7 @@ const navItems = {
   ],
   bursary: [
     { href: '/bursary/dashboard', label: 'Overview', icon: FiGrid },
+    { href: '/bursary/dashboard/payments', label: 'Student Payments', icon: FiDollarSign },
   ],
   admin: [
     { href: '/admin/dashboard', label: 'Reports & Analytics', icon: FiFileText },
