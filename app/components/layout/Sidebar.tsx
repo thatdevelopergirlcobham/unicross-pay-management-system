@@ -1,13 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { FiGrid,  FiFileText, FiLogOut } from 'react-icons/fi';
+import { FiGrid, FiFileText, FiLogOut, FiDollarSign } from 'react-icons/fi';
 
+// The navigation items are well-structured for different roles.
 const navItems = {
   student: [
     { href: '/student/dashboard', label: 'Dashboard', icon: FiGrid },
-    // Add the new link here
     { href: '/student/dashboard/receipts', label: 'My Receipts', icon: FiFileText },
   ],
   bursary: [
@@ -15,13 +14,23 @@ const navItems = {
   ],
   admin: [
     { href: '/admin/dashboard', label: 'Reports & Analytics', icon: FiFileText },
+    { href: '/admin/payments', label: 'Payment Management', icon: FiDollarSign },
   ],
 };
 
-// ... the rest of the component remains the same
-export default function Sidebar() {
-  const pathname = usePathname();
-  const role = pathname.split('/')[1] as keyof typeof navItems || 'student';
+// Define a type for the component's props for better type-safety.
+type SidebarProps = {
+  role: keyof typeof navItems; // This ensures 'role' can only be 'student', 'bursary', or 'admin'
+};
+
+/**
+ * A role-based sidebar component.
+ * @param {SidebarProps} props - The component props.
+ * @param {string} props.role - The current user's role ('student', 'bursary', or 'admin').
+ */
+export default function Sidebar({ role }: SidebarProps) {
+  // Use the 'role' prop to dynamically get the correct navigation links.
+  const currentNavItems = navItems[role] || []; // Fallback to an empty array just in case
 
   return (
     <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col">
@@ -30,9 +39,9 @@ export default function Sidebar() {
       </div>
       <nav className="flex-1 p-4">
         <ul>
-          {(navItems[role]).map((item) => (
+          {currentNavItems.map((item) => (
             <li key={item.label}>
-              <Link href={item.href} className={`flex items-center p-3 my-1 rounded-md text-sm font-medium transition-colors ${pathname === item.href ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-100'}`}>
+              <Link href={item.href} className="flex items-center p-3 my-1 rounded-md text-sm font-medium transition-colors text-gray-600 hover:bg-gray-100">
                 <item.icon className="h-5 w-5 mr-3" />
                 {item.label}
               </Link>
@@ -41,7 +50,7 @@ export default function Sidebar() {
         </ul>
       </nav>
       <div className="p-4 border-t border-gray-200">
-        <Link href="/" className="flex items-center p-3 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100">
+        <Link href="/logout" className="flex items-center p-3 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100">
           <FiLogOut className="h-5 w-5 mr-3" />
           Logout
         </Link>

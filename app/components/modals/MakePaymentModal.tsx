@@ -47,12 +47,101 @@ export default function MakePaymentModal({ onClose, onSubmit }: { onClose: () =>
   const isFixedFee = fixedFees.hasOwnProperty(paymentType);
   const isAmountEditable = paymentOption === 'Part' || !isFixedFee;
 
+  // Function to check authentication status
+  const checkAuthentication = async (): Promise<boolean> => {
+    try {
+      const userData = localStorage.getItem('user');
+      if (!userData) {
+        alert('Please login to make a payment. No user data found.');
+        return false;
+      }
+
+      let user;
+      try {
+        user = JSON.parse(userData);
+      } catch (parseError) {
+        console.error('Error parsing user data:', parseError);
+        alert('Please login again. Invalid user data.');
+        localStorage.removeItem('user');
+        return false;
+      }
+
+      if (!user || !user._id) {
+        alert('Please login to make a payment. User data incomplete.');
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Authentication check error:', error);
+      alert('Authentication error. Please try again.');
+      return false;
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
         <h2 className="text-xl font-bold mb-6">Make a Payment</h2>
-        <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="space-y-6">
-          
+        <form onSubmit={async (e) => {
+          e.preventDefault();
+
+          try {
+            // Check authentication
+            const isAuthenticated = await checkAuthentication();
+            if (!isAuthenticated) {
+              return;
+            }
+
+            // Get current user from localStorage (already validated in checkAuthentication)
+            const userData = localStorage.getItem('user');
+            const user = JSON.parse(userData!); // Safe to use ! since checkAuthentication validates this
+
+            const paymentData = {
+              studentId: user._id,
+              amount: Number(amount),
+              description: paymentType,
+              paymentMethod: 'Online',
+              dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
+            };
+
+            const response = await fetch('/api/payments', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('auth-token') || ''}`
+              },
+              body: JSON.stringify(paymentData),
+            });
+
+            const responseData = await response.json();
+            console.log('Payment API Response:', {
+              status: response.status,
+              ok: response.ok,
+              data: responseData
+            });
+
+            if (response.ok) {
+              alert('Payment submitted successfully!');
+              onSubmit(); // Refresh the dashboard
+              onClose(); // Close the modal
+            } else {
+              console.error('Payment failed:', responseData);
+              if (response.status === 404) {
+                alert('User not found. Please login again.');
+                // Clear invalid user data
+                localStorage.removeItem('user');
+                localStorage.removeItem('auth-token');
+              } else {
+                alert('Payment failed: ' + (responseData.error || 'Unknown error'));
+              }
+            }
+          } catch (error) {
+            console.error('Payment error:', error);
+            alert('Network error. Please try again.');
+          }
+        }} className="space-y-6">
+
           {/* Step 1: Select Fee Type */}
           <div>
             <label htmlFor="paymentType" className="block text-sm font-medium text-gray-700">Payment For</label>
@@ -89,7 +178,7 @@ export default function MakePaymentModal({ onClose, onSubmit }: { onClose: () =>
           <div>
             <Input
               label="Amount to Pay (NGN)"
-              id="amount"
+              id="payment-amount"
               type="number"
               placeholder={isAmountEditable ? "Enter custom amount" : ""}
               value={amount}

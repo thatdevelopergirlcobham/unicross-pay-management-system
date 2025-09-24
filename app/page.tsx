@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Link from 'next/link';
-import { FiUser, FiBriefcase, FiSettings } from 'react-icons/fi';
+import { FiUser, FiBriefcase, FiSettings, FiUserPlus } from 'react-icons/fi';
 
 const PortalCard = ({ href, icon, title, description }: any) => (
   <Link href={href}>
@@ -21,7 +21,7 @@ export default function PortalPage() {
         <h1 className="text-4xl font-bold text-indigo-600">UNICROSS-PAY Portal</h1>
         <p className="mt-2 text-lg text-gray-600">Your Gateway to University Financial Management</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl">
         <PortalCard
           href="/student/login"
           icon={<FiUser className="h-6 w-6 text-indigo-600 group-hover:text-white" />}
@@ -40,6 +40,22 @@ export default function PortalPage() {
           title="Admin Portal"
           description="Generate financial reports and access audit trails."
         />
+        <PortalCard
+          href="/register"
+          icon={<FiUserPlus className="h-6 w-6 text-indigo-600 group-hover:text-white" />}
+          title="Create Account"
+          description="Register for student, bursary, or admin access."
+        />
+      </div>
+
+      {/* Additional Info */}
+      <div className="mt-12 text-center">
+        <p className="text-sm text-gray-500">
+          New to UNICROSS-PAY?{' '}
+          <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+            Create your account here
+          </Link>
+        </p>
       </div>
     </main>
   );
