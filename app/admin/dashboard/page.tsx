@@ -77,7 +77,7 @@ export default function AdminDashboard() {
       if (paymentsResponse.ok) {
         const paymentsData = await paymentsResponse.json();
         const totalRevenue = paymentsData.payments?.reduce((sum: number, payment: any) => {
-          const amount = parseFloat(payment.amount?.replace(/[^0-9.-]/g, '') || '0');
+          const amount = parseFloat(String(payment.amount || 0).replace(/[^0-9.-]/g, ''));
           return sum + (isNaN(amount) ? 0 : amount);
         }, 0) || 0;
 
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
       if (expensesResponse.ok) {
         const expensesData = await expensesResponse.json();
         const totalExpenses = expensesData.expenses?.reduce((sum: number, expense: any) => {
-          const amount = parseFloat(expense.amount?.replace(/[^0-9.-]/g, '') || '0');
+          const amount = parseFloat(String(expense.amount || 0).replace(/[^0-9.-]/g, ''));
           return sum + (isNaN(amount) ? 0 : amount);
         }, 0) || 0;
 

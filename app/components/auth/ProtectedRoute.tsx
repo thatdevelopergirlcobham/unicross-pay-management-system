@@ -1,14 +1,14 @@
 'use client';
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import AuthService from '../libs/authService';
+import AuthService from '../../libs/authService';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requiredRole?: string;
 }
 
-export default function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
+export default function ProtectedRoute({ requiredRole }: ProtectedRouteProps) {
   const router = useRouter();
   const pathname = usePathname();
 

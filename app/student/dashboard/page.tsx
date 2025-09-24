@@ -8,6 +8,7 @@ import StatusTag from '../../components/shared/StatusTag';
 import Button from '../../components/shared/Button';
 import MakePaymentModal from '../../components/modals/MakePaymentModal';
 import DashboardLayout from '../../components/layout/DashboardLayout';
+import { ToastContainer, useToast } from '../../components/shared/Toast';
 import AuthService from '../../libs/authService';
 import {
   FiFileText,
@@ -52,6 +53,8 @@ export default function StudentDashboard() {
   });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [dataFetched, setDataFetched] = useState(false);
+  const { toasts, removeToast, error: showError } = useToast();
 
   const fetchDashboardData = useCallback(async (showRefresh = false) => {
     try {
@@ -63,13 +66,26 @@ export default function StudentDashboard() {
       if (paymentsResponse.ok) {
         const paymentsData = await paymentsResponse.json();
         const paymentList = paymentsData.payments || [];
-        setPayments(paymentList);
+        
+        // Map the payment data to match the expected format
+        const mappedPayments = paymentList.map((payment: any) => ({
+          _id: payment._id,
+          id: payment._id ? payment._id.slice(-8) : 'N/A',
+          date: payment.createdAt || payment.paymentDate || new Date().toISOString(),
+          description: payment.description || 'No description',
+          amount: payment.amount || 0,
+          status: payment.status || 'Unknown',
+          receiptId: payment.transactionRef || '',
+          paymentMethod: payment.paymentMethod || 'Unknown'
+        }));
+        
+        setPayments(mappedPayments);
 
         // Calculate stats from payments
         const totalPaid = paymentList
           .filter((payment: any) => payment.status === 'Paid')
           .reduce((sum: number, payment: any) => {
-            const amount = parseFloat(payment.amount.replace(/[^0-9.-]/g, ''));
+            const amount = parseFloat(String(payment.amount || 0).replace(/[^0-9.-]/g, ''));
             return sum + (isNaN(amount) ? 0 : amount);
           }, 0);
 
@@ -82,25 +98,32 @@ export default function StudentDashboard() {
           pendingPayments,
           completedPayments
         });
+        setDataFetched(true);
+      } else {
+        showError('API Error', `Failed to fetch payments: ${paymentsResponse.status}`);
       }
 
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      showError('Failed to Load Data', 'Unable to fetch dashboard data. Please try again.');
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [showError]);
 
   useEffect(() => {
     // Check if user is authenticated using AuthService
     if (!AuthService.isAuthenticated()) {
-      router.push('/login');
+      router.push('/student/login');
       return;
     }
 
-    fetchDashboardData();
-  }, [fetchDashboardData, router]);
+    // Only fetch data if not already fetched
+    if (!dataFetched) {
+      fetchDashboardData();
+    }
+  }, [router, dataFetched, fetchDashboardData]);
 
   const columns = [
     {
@@ -109,19 +132,31 @@ export default function StudentDashboard() {
       render: (row: any) => (
         <div className="flex items-center">
           <FiFileText className="mr-2 text-indigo-500" />
-          <span className="font-medium">{row.id || row._id.slice(-8)}</span>
+          <span className="font-medium">{row.id || (row._id ? row._id.slice(-8) : 'N/A')}</span>
         </div>
       )
     },
     {
       header: 'Date',
       accessor: 'date',
-      render: (row: any) => (
-        <div className="flex items-center">
-          <FiCalendar className="mr-2 text-gray-400" size={14} />
-          {new Date(row.date).toLocaleDateString()}
-        </div>
-      )
+      render: (row: any) => {
+        try {
+          const date = row.date ? new Date(row.date).toLocaleDateString() : 'N/A';
+          return (
+            <div className="flex items-center">
+              <FiCalendar className="mr-2 text-gray-400" size={14} />
+              {date}
+            </div>
+          );
+        } catch (error) {
+          return (
+            <div className="flex items-center">
+              <FiCalendar className="mr-2 text-gray-400" size={14} />
+              N/A
+            </div>
+          );
+        }
+      }
     },
     {
       header: 'Description',
@@ -139,7 +174,7 @@ export default function StudentDashboard() {
         <div className="flex items-center">
           <FiDollarSign className="mr-1 text-green-500" size={14} />
           <span className="font-semibold text-green-600">
-            ₦{parseFloat(row.amount.replace(/[^0-9.-]/g, '')).toLocaleString()}
+            ₦{row.amount ? parseFloat(String(row.amount).replace(/[^0-9.-]/g, '')).toLocaleString() : '0'}
           </span>
         </div>
       )
@@ -178,18 +213,22 @@ export default function StudentDashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-64">
-        <div className="flex items-center space-x-2">
-          <FiRefreshCw className="animate-spin h-5 w-5" />
-          <span className="text-lg">Loading dashboard...</span>
+      <DashboardLayout title="Student Portal" role="student">
+        <div className="flex items-center justify-center min-h-64">
+          <div className="flex items-center space-x-2">
+            <FiRefreshCw className="animate-spin h-5 w-5" />
+            <span className="text-lg">Loading dashboard...</span>
+          </div>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <DashboardLayout title="Student Portal" role="student">
-      <div className="space-y-4 sm:space-y-6">
+    <>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+      <DashboardLayout title="Student Portal" role="student">
+        <div className="space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
           <div>
@@ -320,6 +359,7 @@ export default function StudentDashboard() {
           }}
         />
       )}
-    </DashboardLayout>
+      </DashboardLayout>
+    </>
   );
 }

@@ -70,7 +70,7 @@ export default function SubmitReportModal({ project, onClose, onSubmit }: Submit
       const data = await response.json();
 
       if (response.ok) {
-        alert('Report submitted successfully!');
+        // Success handled by parent component
         onSubmit();
       } else {
         setError(data.error || 'Failed to submit report');

@@ -5,6 +5,7 @@ import Table from '../../../components/shared/Table';
 import StatusTag from '../../../components/shared/StatusTag';
 import Button from '../../../components/shared/Button';
 import DashboardLayout from '../../../components/layout/DashboardLayout';
+import { ToastContainer, useToast } from '../../../components/shared/Toast';
 import AuthService from '../../../libs/authService';
 import {
   FiFileText,
@@ -38,6 +39,7 @@ export default function BursaryPaymentsPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const { toasts, removeToast, success, error } = useToast();
 
   useEffect(() => {
     // Check if user is authenticated using AuthService
@@ -81,7 +83,7 @@ export default function BursaryPaymentsPage() {
       
       const user = AuthService.getUserData();
       if (!user) {
-        alert('Authentication required. Please login again.');
+        error('Authentication Required', 'Please login again.');
         return;
       }
 
@@ -108,14 +110,14 @@ export default function BursaryPaymentsPage() {
           )
         );
         
-        alert(`Payment ${newStatus.toLowerCase()} successfully.`);
+        success('Payment Updated', `Payment ${newStatus.toLowerCase()} successfully.`);
       } else {
         const errorData = await response.json();
-        alert(`Failed to update payment: ${errorData.error || 'Unknown error'}`);
+        error('Update Failed', errorData.error || 'Unknown error');
       }
-    } catch (error) {
-      console.error('Error updating payment status:', error);
-      alert('An error occurred while updating the payment status.');
+    } catch (err) {
+      console.error('Error updating payment status:', err);
+      error('Update Error', 'An error occurred while updating the payment status.');
     } finally {
       setProcessingId(null);
     }
@@ -233,7 +235,9 @@ export default function BursaryPaymentsPage() {
   }
 
   return (
-    <DashboardLayout title="Payment Approvals" role="bursary">
+    <>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+      <DashboardLayout title="Payment Approvals" role="bursary">
       <div className="space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
@@ -285,6 +289,7 @@ export default function BursaryPaymentsPage() {
           )}
         </div>
       </div>
-    </DashboardLayout>
+      </DashboardLayout>
+    </>
   );
 }

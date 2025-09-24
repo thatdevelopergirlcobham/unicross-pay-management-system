@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import connectDB from '@/app/libs/mongodb';
 import Payment from '@/app/libs/models/Payment';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('Testing payment creation...');
     await connectDB();

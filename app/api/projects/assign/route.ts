@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if student is already assigned to this project
-    if (project.assignedStudents.some(id => id.toString() === studentId)) {
+    if (project.assignedStudents.some((id: { toString: () => string }) => id.toString() === studentId)) {
       return NextResponse.json(
         { error: 'Student is already assigned to this project' },
         { status: 400 }

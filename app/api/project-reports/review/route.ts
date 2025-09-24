@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/app/libs/mongodb';
 import ProjectReport from '@/app/libs/models/ProjectReport';
-import Project from '@/app/libs/models/Project';
 import { getAuthUser } from '@/app/libs/auth';
 
 export async function PATCH(request: NextRequest) {
@@ -50,7 +49,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Verify the supervisor is assigned to this project
-    const project = report.project as any;
+    const project = report.project as { supervisor: { toString: () => string } };
     
     if (project.supervisor.toString() !== user._id.toString()) {
       return NextResponse.json(

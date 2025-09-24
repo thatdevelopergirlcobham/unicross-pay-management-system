@@ -76,8 +76,7 @@ const ReceiptSchema: Schema = new Schema({
   timestamps: true
 });
 
-// Create indexes
-ReceiptSchema.index({ receiptId: 1 });
+// Create indexes (receiptId already has unique index from schema definition)
 ReceiptSchema.index({ studentId: 1 });
 ReceiptSchema.index({ matricNo: 1 });
 ReceiptSchema.index({ issuedDate: 1 });

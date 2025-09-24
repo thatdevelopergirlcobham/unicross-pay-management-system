@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const skip = (page - 1) * limit;
 
-    const query: Record<string, any> = {};
+    const query: Record<string, unknown> = {};
 
     // If user is a student, they can only see their own reports
     if (user.role === 'student') {
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { projectId, title, content, attachmentUrl } = await request.json();
+    const { projectId, title, content, attachmentUrl } = await request.json() as { projectId: string; title: string; content: string; attachmentUrl?: string };
 
     if (!projectId || !title || !content) {
       return NextResponse.json(
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
     }
 
     const isAssigned = project.assignedStudents.some(
-      (studentId: any) => studentId.toString() === user._id.toString()
+      (studentId: { toString: () => string }) => studentId.toString() === user._id.toString()
     );
 
     if (!isAssigned) {

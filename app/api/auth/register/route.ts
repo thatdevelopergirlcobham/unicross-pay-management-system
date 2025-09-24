@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcrypt';
 import connectDB from '@/app/libs/mongodb';
 import User from '@/app/libs/models/User';
 import { generateToken, setAuthCookie } from '@/app/libs/auth';
@@ -32,13 +31,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new user
+    // Create new user (password will be hashed by the pre-save hook)
     const newUser = new User({
       email: email.toLowerCase(),
-      password: hashedPassword,
+      password: password, // Let the pre-save hook handle hashing
       role,
       firstName,
       lastName,

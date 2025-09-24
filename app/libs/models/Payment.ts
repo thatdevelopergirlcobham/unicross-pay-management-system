@@ -6,7 +6,7 @@ export interface IPayment extends Document {
   studentName: string;
   amount: number;
   description: string;
-  paymentMethod: 'Paystack' | 'Flutterwave' | 'Bank Transfer' | 'Cash';
+  paymentMethod: 'Paystack' | 'Flutterwave' | 'Bank Transfer' | 'Cash' | 'Online';
   status: 'Pending' | 'Paid' | 'Failed' | 'Refunded';
   transactionRef?: string;
   paymentDate?: Date;
@@ -43,7 +43,7 @@ const PaymentSchema: Schema = new Schema({
   },
   paymentMethod: {
     type: String,
-    enum: ['Paystack', 'Flutterwave', 'Bank Transfer', 'Cash'],
+    enum: ['Paystack', 'Flutterwave', 'Bank Transfer', 'Cash', 'Online'],
     required: true
   },
   status: {

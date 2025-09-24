@@ -259,7 +259,7 @@ export default function StudentProjectsPage() {
             <div className="text-center py-8">
               <FiAlertCircle className="mx-auto h-12 w-12 text-gray-400 mb-4" />
               <h3 className="text-sm font-medium text-gray-900 mb-2">No projects assigned</h3>
-              <p className="text-sm text-gray-500">You haven't been assigned to any projects yet.</p>
+              <p className="text-sm text-gray-500">You haven&apos;t been assigned to any projects yet.</p>
             </div>
           )}
         </div>
@@ -286,7 +286,7 @@ export default function StudentProjectsPage() {
             <div className="text-center py-8">
               <FiFileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
               <h3 className="text-sm font-medium text-gray-900 mb-2">No reports submitted</h3>
-              <p className="text-sm text-gray-500">You haven't submitted any project reports yet.</p>
+              <p className="text-sm text-gray-500">You haven&apos;t submitted any project reports yet.</p>
             </div>
           )}
         </div>

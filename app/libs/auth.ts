@@ -16,7 +16,7 @@ interface AuthUser {
   matricNo?: string;
 }
 
-export function generateToken(user: any): string {
+export function generateToken(user: { _id: string; email: string; role: string; firstName: string; lastName: string; isActive: boolean; matricNo?: string }): string {
   const token = jwt.sign(
     {
       userId: user._id,
@@ -45,7 +45,7 @@ export function verifyToken(token: string): { user: AuthUser | null; error: Next
       };
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const decoded = jwt.verify(token, JWT_SECRET) as AuthUser;
 
     if (!decoded.userId || !decoded.email || !decoded.role) {
       return {
@@ -59,7 +59,7 @@ export function verifyToken(token: string): { user: AuthUser | null; error: Next
 
     return { user: decoded as AuthUser, error: null };
 
-  } catch (jwtError) {
+  } catch {
     return {
       user: null,
       error: NextResponse.json(
@@ -107,7 +107,7 @@ export async function getAuthUser(request: NextRequest): Promise<{ user: AuthUse
 
     return { user: dbUser.toObject() as AuthUser, error: null };
 
-  } catch (error) {
+  } catch {
     return {
       user: null,
       error: NextResponse.json(

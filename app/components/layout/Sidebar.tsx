@@ -34,7 +34,7 @@ export default function Sidebar({ role }: SidebarProps) {
   const currentNavItems = navItems[role] || []; // Fallback to an empty array just in case
 
   return (
-    <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col">
+    <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col hidden lg:flex">
       <div className="h-16 flex items-center px-6 border-b border-gray-200">
         <h1 className="text-lg font-bold text-indigo-600">UNI-PAY</h1>
       </div>
@@ -42,7 +42,7 @@ export default function Sidebar({ role }: SidebarProps) {
         <ul>
           {currentNavItems.map((item) => (
             <li key={item.label}>
-              <Link href={item.href} className="flex items-center p-3 my-1 rounded-md text-sm font-medium transition-colors text-gray-600 hover:bg-gray-100">
+              <Link href={item.href} className="flex items-center p-3 my-1 rounded-md text-sm font-medium transition-colors text-gray-600 hover:bg-gray-100 hover:text-indigo-600">
                 <item.icon className="h-5 w-5 mr-3" />
                 {item.label}
               </Link>
@@ -51,7 +51,7 @@ export default function Sidebar({ role }: SidebarProps) {
         </ul>
       </nav>
       <div className="p-4 border-t border-gray-200">
-        <Link href="/logout" className="flex items-center p-3 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100">
+        <Link href="/logout" className="flex items-center p-3 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-red-600">
           <FiLogOut className="h-5 w-5 mr-3" />
           Logout
         </Link>

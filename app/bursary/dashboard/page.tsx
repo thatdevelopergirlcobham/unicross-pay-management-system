@@ -80,20 +80,20 @@ export default function BursaryDashboard() {
         const pendingExpenses = expenseList
           .filter((expense: any) => expense.status === 'Pending')
           .reduce((sum: number, expense: any) => {
-            const amount = parseFloat(expense.amount.replace(/[^0-9.-]/g, ''));
+            const amount = parseFloat(String(expense.amount).replace(/[^0-9.-]/g, ''));
             return sum + (isNaN(amount) ? 0 : amount);
           }, 0);
 
         const approvedThisMonth = expenseList
           .filter((expense: any) => expense.status === 'Approved')
           .reduce((sum: number, expense: any) => {
-            const amount = parseFloat(expense.amount.replace(/[^0-9.-]/g, ''));
+            const amount = parseFloat(String(expense.amount).replace(/[^0-9.-]/g, ''));
             return sum + (isNaN(amount) ? 0 : amount);
           }, 0);
 
         const totalExpenses = expenseList
           .reduce((sum: number, expense: any) => {
-            const amount = parseFloat(expense.amount.replace(/[^0-9.-]/g, ''));
+            const amount = parseFloat(String(expense.amount).replace(/[^0-9.-]/g, ''));
             return sum + (isNaN(amount) ? 0 : amount);
           }, 0);
 
@@ -134,7 +134,7 @@ export default function BursaryDashboard() {
       accessor: 'amount',
       render: (row: any) => (
         <span className="font-semibold text-green-600">
-          ₦{parseFloat(row.amount.replace(/[^0-9.-]/g, '')).toLocaleString()}
+          ₦{parseFloat(String(row.amount).replace(/[^0-9.-]/g, '')).toLocaleString()}
         </span>
       )
     },

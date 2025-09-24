@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import connectDB from '@/app/libs/mongodb';
 import User from '@/app/libs/models/User';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('Testing database connection...');
     await connectDB();
@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
       email: 'test@example.com',
       password: 'hashedpassword',
       role: 'student',
+      matricNo: 'TEST123',
       isActive: true
     });
 

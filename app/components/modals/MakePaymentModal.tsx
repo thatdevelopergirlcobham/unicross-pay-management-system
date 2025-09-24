@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Button from '../shared/Button';
 import Input from '../shared/Input';
+import { useToast } from '../shared/Toast';
 
 // A dictionary of fixed fees for different payment types
 const fixedFees: { [key: string]: number } = {
@@ -26,6 +27,8 @@ export default function MakePaymentModal({ onClose, onSubmit }: { onClose: () =>
   const [paymentOption, setPaymentOption] = useState<'Full' | 'Part'>('Full');
   const [fullAmount, setFullAmount] = useState<number>(0);
   const [amount, setAmount] = useState<number | string>('');
+  const [loading, setLoading] = useState(false);
+  const { success, error } = useToast();
 
   // EFFECT 1: Runs when the main payment category (e.g., School Fees) changes.
   useEffect(() => {
@@ -52,7 +55,7 @@ export default function MakePaymentModal({ onClose, onSubmit }: { onClose: () =>
     try {
       const userData = localStorage.getItem('user');
       if (!userData) {
-        alert('Please login to make a payment. No user data found.');
+        error('Authentication Required', 'Please login to make a payment. No user data found.');
         return false;
       }
 
@@ -61,20 +64,20 @@ export default function MakePaymentModal({ onClose, onSubmit }: { onClose: () =>
         user = JSON.parse(userData);
       } catch (parseError) {
         console.error('Error parsing user data:', parseError);
-        alert('Please login again. Invalid user data.');
+        error('Invalid User Data', 'Please login again. Invalid user data.');
         localStorage.removeItem('user');
         return false;
       }
 
       if (!user || !user._id) {
-        alert('Please login to make a payment. User data incomplete.');
+        error('Incomplete User Data', 'Please login to make a payment. User data incomplete.');
         return false;
       }
 
       return true;
-    } catch (error) {
-      console.error('Authentication check error:', error);
-      alert('Authentication error. Please try again.');
+    } catch (err) {
+      console.error('Authentication check error:', err);
+      error('Authentication Error', 'Authentication error. Please try again.');
       return false;
     }
   };
@@ -85,11 +88,13 @@ export default function MakePaymentModal({ onClose, onSubmit }: { onClose: () =>
         <h2 className="text-xl font-bold mb-6">Make a Payment</h2>
         <form onSubmit={async (e) => {
           e.preventDefault();
+          setLoading(true);
 
           try {
             // Check authentication
             const isAuthenticated = await checkAuthentication();
             if (!isAuthenticated) {
+              setLoading(false);
               return;
             }
 
@@ -122,23 +127,25 @@ export default function MakePaymentModal({ onClose, onSubmit }: { onClose: () =>
             });
 
             if (response.ok) {
-              alert('Payment submitted successfully!');
+              success('Payment Submitted', 'Payment submitted successfully!');
               onSubmit(); // Refresh the dashboard
               onClose(); // Close the modal
             } else {
               console.error('Payment failed:', responseData);
               if (response.status === 404) {
-                alert('User not found. Please login again.');
+                error('User Not Found', 'User not found. Please login again.');
                 // Clear invalid user data
                 localStorage.removeItem('user');
                 localStorage.removeItem('auth-token');
               } else {
-                alert('Payment failed: ' + (responseData.error || 'Unknown error'));
+                error('Payment Failed', responseData.error || 'Unknown error');
               }
             }
-          } catch (error) {
-            console.error('Payment error:', error);
-            alert('Network error. Please try again.');
+          } catch (err) {
+            console.error('Payment error:', err);
+            error('Network Error', 'Network error. Please try again.');
+          } finally {
+            setLoading(false);
           }
         }} className="space-y-6">
 
@@ -189,8 +196,10 @@ export default function MakePaymentModal({ onClose, onSubmit }: { onClose: () =>
           </div>
           
           <div className="flex justify-end space-x-4 pt-4">
-            <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
-            <Button type="submit">Proceed to Pay ₦{Number(amount).toLocaleString()}</Button>
+            <Button type="button" variant="secondary" onClick={onClose} disabled={loading}>Cancel</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? 'Processing...' : `Proceed to Pay ₦${Number(amount).toLocaleString()}`}
+            </Button>
           </div>
         </form>
       </div>

@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('Stored password hash:', user.password);
-    let isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     console.log('Password valid:', isPasswordValid);
 
     if (!isPasswordValid) {

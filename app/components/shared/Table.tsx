@@ -1,10 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactNode } from 'react';
 
-type TableColumn = { header: string; accessor: string; render?: (row: Record<string, any>) => ReactNode; };
-type TableProps = { columns: TableColumn[]; data: Record<string, any>[]; };
+type TableColumn<T = Record<string, unknown>> = { 
+  header: string; 
+  accessor: string; 
+  render?: (row: T) => ReactNode; 
+};
 
-export default function Table({ columns, data }: TableProps) {
+type TableProps<T = Record<string, unknown>> = { 
+  columns: TableColumn<T>[]; 
+  data: T[]; 
+};
+
+export default function Table<T = Record<string, unknown>>({ columns, data }: TableProps<T>) {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -20,7 +27,7 @@ export default function Table({ columns, data }: TableProps) {
             <tr key={rowIndex} className="hover:bg-gray-50">
               {columns.map((col) => (
                 <td key={col.accessor} className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  {col.render ? col.render(row) : row[col.accessor]}
+                  {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.accessor] || '')}
                 </td>
               ))}
             </tr>

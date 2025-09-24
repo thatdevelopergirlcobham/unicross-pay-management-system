@@ -6,7 +6,7 @@ export async function PATCH(request: NextRequest) {
   try {
     await connectDB();
 
-    const { paymentId, status, adminId } = await request.json();
+    const { paymentId, status } = await request.json();
 
     if (!paymentId || !status) {
       return NextResponse.json(

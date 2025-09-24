@@ -44,7 +44,7 @@ export default function StudentLoginPage() {
       } else {
         setError(data.error || 'Login failed');
       }
-    } catch (error: any) {
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);

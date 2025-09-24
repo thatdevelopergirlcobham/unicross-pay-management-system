@@ -54,13 +54,13 @@ export default function AddExpenseModal({ onClose, onSubmit }: AddExpenseModalPr
       });
 
       if (response.ok) {
-        alert('Expense logged successfully!');
+        // Success handled by parent component
         onSubmit(); // Call the parent callback to refresh data
         onClose(); // Close the modal
       } else {
         console.error('Expense creation failed:', responseData);
         if (response.status === 404) {
-          alert('User not found. Please login again.');
+          // Error handled by parent component
           // Clear invalid user data
           localStorage.removeItem('user');
           localStorage.removeItem('auth-token');

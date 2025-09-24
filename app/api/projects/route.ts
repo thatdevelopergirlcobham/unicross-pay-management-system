@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/app/libs/mongodb';
 import Project from '@/app/libs/models/Project';
-import User from '@/app/libs/models/User';
 import { getAuthUser } from '@/app/libs/auth';
 
 export async function GET(request: NextRequest) {
@@ -16,7 +15,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const skip = (page - 1) * limit;
 
-    const query: Record<string, any> = {};
+    const query: Record<string, unknown> = {};
 
     if (supervisorId) {
       query.supervisor = supervisorId;

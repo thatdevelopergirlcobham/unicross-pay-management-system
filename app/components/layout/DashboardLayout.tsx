@@ -20,7 +20,7 @@ interface DashboardLayoutProps {
   role: string;
 }
 
-export default function DashboardLayout({ children, title, role }: DashboardLayoutProps) {
+export default function DashboardLayout({ children, title }: DashboardLayoutProps) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,10 +57,10 @@ export default function DashboardLayout({ children, title, role }: DashboardLayo
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
@@ -81,9 +81,11 @@ export default function DashboardLayout({ children, title, role }: DashboardLayo
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {children}
+      {/* Main Content - Full Width */}
+      <main className="w-full bg-gray-50 min-h-[calc(100vh-4rem)]">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-6">
+          {children}
+        </div>
       </main>
     </div>
   );

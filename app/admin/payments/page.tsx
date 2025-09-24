@@ -4,12 +4,12 @@ import DashboardCard from '../../components/shared/DashboardCard';
 import Table from '../../components/shared/Table';
 import Button from '../../components/shared/Button';
 import StatusTag from '../../components/shared/StatusTag';
+import { ToastContainer, useToast } from '../../components/shared/Toast';
 import {
   FiFileText,
   FiCheckCircle,
   FiXCircle,
   FiRefreshCw,
-  FiTrendingUp,
   FiDollarSign
 } from 'react-icons/fi';
 
@@ -43,6 +43,7 @@ export default function AdminPaymentsPage() {
   });
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
+  const { toasts, removeToast, success, error } = useToast();
 
   const fetchPayments = async () => {
     try {
@@ -88,14 +89,14 @@ export default function AdminPaymentsPage() {
 
       if (response.ok) {
         await fetchPayments(); // Refresh the list
-        alert(`Payment ${status.toLowerCase()} successfully!`);
+        success('Payment Updated', `Payment ${status.toLowerCase()} successfully!`);
       } else {
         const errorData = await response.json();
-        alert('Failed to update payment: ' + (errorData.error || 'Unknown error'));
+        error('Update Failed', errorData.error || 'Unknown error');
       }
-    } catch (error) {
-      console.error('Error updating payment:', error);
-      alert('Network error. Please try again.');
+    } catch (err) {
+      console.error('Error updating payment:', err);
+      error('Network Error', 'Network error. Please try again.');
     } finally {
       setUpdating(null);
     }
@@ -109,7 +110,7 @@ export default function AdminPaymentsPage() {
     {
       header: 'Student',
       accessor: 'studentName',
-      render: (row: any) => (
+      render: (row: Payment) => (
         <div>
           <div className="font-medium">{row.studentName}</div>
           <div className="text-sm text-gray-500">{row.matricNo}</div>
@@ -123,7 +124,7 @@ export default function AdminPaymentsPage() {
     {
       header: 'Amount',
       accessor: 'amount',
-      render: (row: any) => (
+      render: (row: Payment) => (
         <span className="font-semibold text-green-600">
           ₦{row.amount.toLocaleString()}
         </span>
@@ -132,17 +133,17 @@ export default function AdminPaymentsPage() {
     {
       header: 'Status',
       accessor: 'status',
-      render: (row: any) => <StatusTag status={row.status} />
+      render: (row: Payment) => <StatusTag status={row.status} />
     },
     {
       header: 'Date',
       accessor: 'createdAt',
-      render: (row: any) => new Date(row.createdAt).toLocaleDateString()
+      render: (row: Payment) => new Date(row.createdAt).toLocaleDateString()
     },
     {
       header: 'Actions',
       accessor: 'actions',
-      render: (row: any) => (
+      render: (row: Payment) => (
         <div className="flex space-x-2">
           {row.status === 'Pending' && (
             <>
@@ -187,7 +188,9 @@ export default function AdminPaymentsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -240,7 +243,7 @@ export default function AdminPaymentsPage() {
 
         {payments.length > 0 ? (
           <div className="overflow-x-auto">
-            <Table columns={columns} data={payments} />
+            <Table<Payment> columns={columns} data={payments} />
           </div>
         ) : (
           <div className="text-center py-8">
@@ -250,6 +253,7 @@ export default function AdminPaymentsPage() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

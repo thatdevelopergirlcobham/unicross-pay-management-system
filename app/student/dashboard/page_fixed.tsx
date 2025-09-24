@@ -95,7 +95,7 @@ export default function StudentDashboard() {
   useEffect(() => {
     // Check if user is authenticated using AuthService
     if (!AuthService.isAuthenticated()) {
-      router.push('/login');
+      router.push('/student/login');
       return;
     }
 
