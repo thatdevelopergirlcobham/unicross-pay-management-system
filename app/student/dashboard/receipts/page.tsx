@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Table from '../../../components/shared/Table';
 import StatusTag from '../../../components/shared/StatusTag';
@@ -47,7 +47,6 @@ export default function ReceiptsPage() {
   const fetchReceipts = useCallback(async () => {
     try {
       setLoading(true);
-      
       const token = AuthService.getToken();
       if (!token) {
         throw new Error('Authentication required');
@@ -59,7 +58,7 @@ export default function ReceiptsPage() {
         }
       });
 
-      if (!response.ok) {
+{{ ... }}
         throw new Error('Failed to fetch receipts');
       }
 
