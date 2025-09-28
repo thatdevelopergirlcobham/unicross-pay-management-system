@@ -31,7 +31,7 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
       if (userData) {
         setUser(userData);
       } else {
-        router.push('/login');
+        router.push('/');
       }
       setLoading(false);
     };
@@ -41,7 +41,7 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
 
   const handleLogout = () => {
     AuthService.clearAuthData();
-    router.push('/login');
+    router.push('/');
   };
 
   if (loading) {

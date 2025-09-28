@@ -29,14 +29,14 @@ export default function ProtectedRoute({ requiredRole }: ProtectedRouteProps) {
           if (user) {
             router.push(AuthService.getDashboardPath(user.role));
           } else {
-            router.push('/login');
+            router.push('/');
           }
           return;
         }
       }
 
       // Auto-redirect if user is already authenticated and trying to access auth pages
-      if (pathname === '/login' || pathname === '/register') {
+      if (pathname === '/' || pathname === '/register') {
         const user = AuthService.getUserData();
         if (user) {
           router.push(AuthService.getDashboardPath(user.role));
