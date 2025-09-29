@@ -103,13 +103,15 @@ export default function ReceiptsPage() {
     }
   }, [currentUser?.matricNo]);
 
+  // ✅ FIX: run only once on mount, not on every re-render
   useEffect(() => {
     if (!AuthService.isAuthenticated() || !currentUser) {
       router.push('/');
       return;
     }
     fetchReceipts();
-  }, [currentUser, router, fetchReceipts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // empty array ensures it runs only once
 
   const columns = [
     {
@@ -243,7 +245,6 @@ export default function ReceiptsPage() {
           <Table 
             columns={columns} 
             data={receipts} 
-            // className="w-full"
           />
         </div>
       )}
