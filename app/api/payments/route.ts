@@ -4,8 +4,9 @@ import Payment from '@/app/libs/models/Payment';
 import User from '@/app/libs/models/User';
 
 interface PaymentQuery {
-  studentId?: string;
+  studentId?: string | { $in: string[] };
   status?: string;
+  matricNo?: string | { $in: string[] };
 }
 
 export async function GET(request: NextRequest) {
@@ -14,6 +15,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const studentId = searchParams.get('studentId');
+    const matricNo = searchParams.get('matricNo');
     const status = searchParams.get('status');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
@@ -23,6 +25,23 @@ export async function GET(request: NextRequest) {
 
     if (studentId) {
       query.studentId = studentId;
+    } else if (matricNo) {
+      // If matricNo is provided, find the student ID(s) first
+      const students = await User.find({ matricNo: { $in: matricNo.split(',') } }, '_id');
+      if (students.length > 0) {
+        query.studentId = { $in: students.map(s => s._id) };
+      } else {
+        // Return empty result if no student found with the matric number
+        return NextResponse.json({
+          payments: [],
+          pagination: {
+            page,
+            limit,
+            total: 0,
+            pages: 0
+          }
+        });
+      }
     }
 
     if (status) {

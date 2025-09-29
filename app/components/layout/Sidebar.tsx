@@ -51,7 +51,7 @@ export default function Sidebar({ role }: SidebarProps) {
         </ul>
       </nav>
       <div className="p-4 border-t border-gray-200">
-        <Link href="/logout" className="flex items-center p-3 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-red-600">
+        <Link href="/" className="flex items-center p-3 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-red-600">
           <FiLogOut className="h-5 w-5 mr-3" />
           Logout
         </Link>

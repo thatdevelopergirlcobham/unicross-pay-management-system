@@ -12,6 +12,7 @@ import {
   FiRefreshCw,
   FiDollarSign
 } from 'react-icons/fi';
+import AdminDashboardLayout from '../dashboard/layout';
 
 interface Payment {
   _id: string;
@@ -189,6 +190,7 @@ export default function AdminPaymentsPage() {
 
   return (
     <>
+    <AdminDashboardLayout>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
       <div className="space-y-6">
       {/* Header */}
@@ -254,6 +256,7 @@ export default function AdminPaymentsPage() {
         )}
       </div>
       </div>
+      </AdminDashboardLayout>
     </>
   );
 }

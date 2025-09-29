@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const studentId = searchParams.get('studentId');
     const receiptId = searchParams.get('receiptId');
+    const paymentId = searchParams.get('paymentId');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
     const skip = (page - 1) * limit;
@@ -23,6 +24,10 @@ export async function GET(request: NextRequest) {
 
     if (receiptId) {
       query.receiptId = receiptId;
+    }
+
+    if (paymentId) {
+      query.paymentId = { $in: paymentId.split(',') };
     }
 
     const receipts = await Receipt.find(query)
